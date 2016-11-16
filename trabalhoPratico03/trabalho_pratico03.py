@@ -27,7 +27,7 @@ def codificacao8bit(nbits, signalin):
    
 def codificacao(nbits, signalin):
     if(nbits <= 8): return codificacao8bit(nbits, signalin)
-    
+#TODO Implementar codificaçcao com nBits superior a 8
 #    def codificacao(R,signalIn):
 #    arrBin=np.zeros(len(signalIn)*R*1,dtype=np.int64)
 #    for i in range(len(signalIn)):

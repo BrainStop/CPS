@@ -10,7 +10,7 @@ import matplotlib.pyplot as plt
 import scipy.io.wavfile as wav
 import trabalhoPratico02.trabalho_pratico02 as tp02
 
-
+#oejfzieohfjzahglkjrhglkzjerglkjzehg
 
 #ex 1)
 #==============================================================================

@@ -21,12 +21,13 @@ def codificacao8bit(nbits, signalin):
     #Converte cada linha do array para o seu array binario
     arry_bin = np.unpackbits(singal_shape, axis=1)
     #Splice dos bits necessarios
-    arr_bin_spliced = arry_bin[:, np.arange(-nbits, 0)]
+    arr_bin_spliced = arry_bin[:, np.arange(-nbits, 0)]#
     #Altera o forma do array para unidimensional e retorna-o a np.bool
     return arr_bin_spliced.flatten().astype(np.bool)
    
 def codificacao(nbits, signalin):
-    if(nbits <= 8): return codificacao8bit(nbits, signalin)
+    if(nbits <= 8):
+        return codificacao8bit(nbits, signalin)
 #TODO Implementar codificaçcao com nBits superior a 8
 #    def codificacao(R,signalIn):
 #    arrBin=np.zeros(len(signalIn)*R*1,dtype=np.int64)

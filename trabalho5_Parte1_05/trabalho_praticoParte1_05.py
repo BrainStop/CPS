@@ -14,52 +14,22 @@ Amp=5
 
 
 
-def toPNZ(stream,evenStream,amp):
-    
-    newStream=np.zeros((len(stream),evenStream))
-    nullPart=np.zeros(evenStream/2)
-#    para bit 1
-    ampPartPosi=np.zeros(evenStream/2)
-    ampPartPosi.fill(Amp)
-    ones=np.hstack((ampPartPosi,nullPart))
-#     para bit 0
-    ampPartNega=np.zeros(evenStream/2)
-    ampPartNega.fill(-Amp)
-    zeros=np.hstack((ampPartNega,nullPart))
-    
-    for P in range(len(stream)):
-        if(stream[P]==1):
-            newStream[P]=ones
-        else:
-            newStream[P]=zeros
-            
-    return newStream.flatten()
-    
+def toPRZ(stream, evenStream, amp):
+    newStream = np.zeros((len(stream), evenStream))
+    indx_0 = np.where(stream[:,np.newaxis]==0)[0]
+    indx_1 = np.where(stream[:,np.newaxis]==1)[0]
+    newStream[indx_0,:evenStream/2] = amp
+    newStream[indx_1,:evenStream/2] = -amp
+    return newStream
 #exercicio 2
 lamba=0
-pnzStream=toPNZ(Stream,even,Amp)   
+pnzStream=toPRZ(Stream, even, Amp)
 
-    
-def adaptedFilter(pnzStream,lambaDecisionValue):
-    amp=0
-    tbdiv2=0
-    while(pnzStream[tbdiv2] != 0):
-        amp+=abs(pnzStream[tbdiv2])
-        tbdiv2=tbdiv2+1
-        
-    amp=int(round(amp/tbdiv2))
-    
-    return amp
-    
-    
-    
-    
-#    for P in range(len(pnzStream)):
-        
-    
-    
-    
-    
-    
-    
-    
+
+def adaptedFilter(przStream, even,lambaDecisionValue):
+    prz_split = np.reshape(przStream, (-1, even))
+    media = np.mean(prz_split, axis=1)
+    return (media < lambaDecisionValue).astype(int)
+
+def channelAWGN(signal_in, p_ruido):
+    return sinal_in + np.sqrt(p_ruido) *  np.random.randn(len(sinal_in))

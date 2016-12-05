@@ -115,7 +115,6 @@ def descodificacao_hamming(c_stream):
 
 def main():
     #exercicio 3
-
     # definicao de um seed para os as mensagens enviadas sejam sempre as mesmas
     np.random.seed(10)
     # criacao de uma stream de aleatorios formanbdo N / 4 mensagens

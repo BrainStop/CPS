@@ -6,6 +6,15 @@ Created on Mon Dec 05 18:37:10 2016
 """
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.io.wavfile as wav
+
+import sys
+sys.path.append("../")
+
+import trabalhoPratico02.trabalho_pratico02 as tp02
+import trabalhoPratico03.trabalho_pratico03 as tp03
+import trabalhoPratico04.trabalho_pratico04 as tp04
+
 
 Stream= np.array([0,1,0,1,0,1,1,0])
 even=6
@@ -36,7 +45,6 @@ def channelAWGN(signal_in, p_noise):
 
 def ex4TestesAsFuncAnteriores():
 #    alinea a)
-
 #   PRZ vals
     stremTest=np.array([0,1,1,0,0,1])
     P=8
@@ -53,14 +61,13 @@ def ex4TestesAsFuncAnteriores():
     plt.title("Comparacao entre sinal a entrada e a saida o canal AWGN")
     plt.plot(przStreamTest)
     plt.plot(przStremWhitNoise)
-    
-#    sinal sem ser codificado
+#   sinal sem ser codificado
     stremTest=np.array([0,1,1,0,0,1]) 
 #    sinal codificado e descodificado com ruido
     descodiPrzStremWhitNoise=adaptedFilter(przStremWhitNoise,P,limiar)
 #    output:
 #           array([1, 1, 1, 0, 0, 0]) existe erro
-    
+
 #    alinea b)
     varianVals=np.array([0.5,1,2])
     for i in range(len(varianVals)):#melhorar esta cena
@@ -72,9 +79,37 @@ def ex4TestesAsFuncAnteriores():
 #        com o aumento da variancia(ruido) o sinal 
 #        começa a ser muito diferente do original
         
+
+def ex5testeATodoSistema():
+#    Ler ficheiro e ver quais as frequencias
+#    carregar ficheiro
+    sys.path.append("cd")
+    rate,data=wav.read("guitarra.wav")
+#    tabela MidRise
+    vQ,vD=tp02.TabelasMidRise(10,np.max(data))
+#    quantificaçao do ficheiro pela tabela MidRise    
+    valQuanti,valIndices=tp02.Quantificador(vQ,vD,data)
+#    codificacao
+    codiVals=tp03.codificacao(4,valIndices)
+    
+    codeHamming=tp04.codificacao_hamming(codiVals)
     
 
-#TODO começar o ex5
+    return True
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     

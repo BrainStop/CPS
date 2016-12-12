@@ -113,4 +113,8 @@ def main():
     #codificacao DPCM
     cy_coded = DPCM(R, y)
     #==========================================================================
-print(_ex2PCM("../wavFiles/guitarra.wav"))
+
+def testToThisFile(files):
+    print(_ex2PCM(files))
+    
+#testToThisFile("../wavFiles/guitarra.wav")

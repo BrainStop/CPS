@@ -20,6 +20,7 @@ Stream= np.array([0,1,0,1,0,1,1,0])
 even=6
 Amp=5
 
+#Modulacao digital
 def toPRZ(stream, evenStream, amp):
     newStream = np.zeros((len(stream), evenStream))
     indx_0 = np.where(stream[:,np.newaxis]==0)[0]
@@ -32,7 +33,7 @@ def toPRZ(stream, evenStream, amp):
 lamba=0
 pnzStream=toPRZ(Stream, even, Amp)
 
-def adaptedFilter(przStream, even,lambaDecisionValue):
+def decodePRZ(przStream, even,lambaDecisionValue):
     prz_split = np.reshape(przStream, (-1, even))
     media = np.mean(prz_split, axis=1)
     return (media < lambaDecisionValue).astype(int)
@@ -64,7 +65,7 @@ def ex4TestesAsFuncAnteriores():
 #   sinal sem ser codificado
     stremTest=np.array([0,1,1,0,0,1]) 
 #    sinal codificado e descodificado com ruido
-    descodiPrzStremWhitNoise=adaptedFilter(przStremWhitNoise,P,limiar)
+    descodiPrzStremWhitNoise=decodePRZ(przStremWhitNoise,P,limiar)
 #    output:
 #           array([1, 1, 1, 0, 0, 0]) existe erro
 
@@ -79,20 +80,56 @@ def ex4TestesAsFuncAnteriores():
 #        com o aumento da variancia(ruido) o sinal 
 #        começa a ser muito diferente do original
         
+def toString(info,val):
+    print(str(info)+str(val))
 
 def ex5testeATodoSistema():
 #    Ler ficheiro e ver quais as frequencias
 #    carregar ficheiro
-    sys.path.append("cd")
-    rate,data=wav.read("guitarra.wav")
+
+#original
+#    sys.path.append("cd")
+#    rate,data=wav.read("guitarra.wav")
+
+#teste
+    data=np.arange(-8,9)
+
 #    tabela MidRise
-    vQ,vD=tp02.TabelasMidRise(10,np.max(data))
+    vQ,vD=tp02.TabelasMidRise(4,np.max(data))
+    toString("valor Quantificacao:",vQ)
+    toString("valor Decisao:",vD)
+    
 #    quantificaçao do ficheiro pela tabela MidRise    
     valQuanti,valIndices=tp02.Quantificador(vQ,vD,data)
+    toString("Data Quantificado:",valQuanti)
+    toString("Data Indices:",valIndices)
+    
 #    codificacao
     codiVals=tp03.codificacao(4,valIndices)
     
+#    codificacao em Hamming
     codeHamming=tp04.codificacao_hamming(codiVals)
+#    Modulaçao Digital
+    codePRZ=toPRZ(codeHamming,8,1)
+    
+#    adiciona ruido
+    noise=0.5
+    afterPassChannelAWGN=channelAWGN(codePRZ,noise)
+#    passa de modulacao sinal para binario
+    decodeprz=decodePRZ(afterPassChannelAWGN,8,0)
+#    descodificacao Hamming
+    decodeHamming=tp04.descodificacao_hamming(decodeprz)
+#    descodificacao de binario
+    decodeBits=tp03.descodificacao(4,decodeHamming)
+
+    print(decodeBits!=valIndices)
+    print(len(valIndices))
+        
+    
+    
+    
+    
+    
     
 
     return True

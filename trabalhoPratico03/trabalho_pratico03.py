@@ -23,7 +23,7 @@ def codificacao8bit(nbits, signalin):
     #Splice dos bits necessarios
     arr_bin_spliced = arry_bin[:, np.arange(-nbits, 0)]#
     #Altera o forma do array para unidimensional e retorna-o a np.bool
-    return arr_bin_spliced.flatten().astype(np.bool)
+    return arr_bin_spliced.flatten().astype(np.int64)
    
 def codificacao(nbits, signalin):
     if(nbits <= 8):

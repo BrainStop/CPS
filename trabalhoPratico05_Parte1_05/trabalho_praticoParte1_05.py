@@ -86,69 +86,57 @@ def toString(info,val):
 def ex5testeATodoSistema():
 #    Ler ficheiro e ver quais as frequencias
 #    carregar ficheiro
-
+#
 #original
-#    sys.path.append("cd")
-#    rate,data=wav.read("guitarra.wav")
+    sys.path.append("cd")
+    rate,data=wav.read("guitarra.wav")
 
 #teste
-    data=np.arange(-8,9)
+#    data=np.arange(-8,9)
+    toString("Data: ", data)
 
 #    tabela MidRise
     vQ,vD=tp02.TabelasMidRise(4,np.max(data))
-    toString("valor Quantificacao:",vQ)
-    toString("valor Decisao:",vD)
+#    toString("valor Quantificacao:",vQ)
+#    toString("valor Decisao:",vD)
     
 #    quantificaçao do ficheiro pela tabela MidRise    
     valQuanti,valIndices=tp02.Quantificador(vQ,vD,data)
-    toString("Data Quantificado:",valQuanti)
+#    toString("Data Quantificado:",valQuanti)
     toString("Data Indices:",valIndices)
     
 #    codificacao
     codiVals=tp03.codificacao(4,valIndices)
-    
+    toString("CodiVals: ", codiVals)
+    toString("CodiValsSHAPE:", codiVals.shape)    
 #    codificacao em Hamming
     codeHamming=tp04.codificacao_hamming(codiVals)
+    toString("CodeHamming: ", codeHamming)
+    toString("CodeHammingSHAPE: ", codeHamming.shape)
 #    Modulaçao Digital
-    codePRZ=toPRZ(codeHamming,8,1)
+    codePRZ=toPRZ(codeHamming,2,1)
+    toString("CodePRZ: ", codePRZ)
     
 #    adiciona ruido
-    noise=0.5
+    noise=0.1
     afterPassChannelAWGN=channelAWGN(codePRZ,noise)
+    toString("Ruido: ", noise)
+    toString("CANALRUIDO: ", afterPassChannelAWGN)
+    toString("DIFERENCAS: ", np.sum(afterPassChannelAWGN!=codePRZ))
+    
 #    passa de modulacao sinal para binario
-    decodeprz=decodePRZ(afterPassChannelAWGN,8,0)
+    decodeprz=decodePRZ(afterPassChannelAWGN,2,0)
+    toString("DecodePRZ: ",decodeprz)
+    toString("DIFERENCAS: ", np.sum(decodeprz!=codeHamming))
+    
 #    descodificacao Hamming
     decodeHamming=tp04.descodificacao_hamming(decodeprz)
+    toString("decodeHamming: ", decodeHamming)
+    toString("DIFERENCAS: ", np.sum(decodeHamming!=codiVals))
+    
 #    descodificacao de binario
     decodeBits=tp03.descodificacao(4,decodeHamming)
-
-    print(decodeBits!=valIndices)
-    print(len(valIndices))
-        
+    toString("decodeBits", decodeBits)
+    toString("DIFERENCAS: ", np.sum(decodeBits!=valIndices))
     
-    
-    
-    
-    
-    
-
-    return True
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+ex5testeATodoSistema()

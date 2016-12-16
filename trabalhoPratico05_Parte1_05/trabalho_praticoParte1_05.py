@@ -7,6 +7,7 @@ Created on Mon Dec 05 18:37:10 2016
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.io.wavfile as wav
+import math
 
 import sys
 sys.path.append("../")
@@ -89,10 +90,7 @@ def ex5testeATodoSistema():
 #
 #original
     sys.path.append("cd")
-    rate,data=wav.read("guitarra.wav")
-
-#teste
-#    data=np.arange(-8,9)
+    rate, data = wav.read("guitarra.wav")
     toString("Data: ", data)
 
 #    tabela MidRise
@@ -101,7 +99,7 @@ def ex5testeATodoSistema():
 #    toString("valor Decisao:",vD)
     
 #    quantificaçao do ficheiro pela tabela MidRise    
-    valQuanti,valIndices=tp02.Quantificador(vQ,vD,data)
+    valQuanti, valIndices=tp02.Quantificador(vQ,vD,data)
 #    toString("Data Quantificado:",valQuanti)
     toString("Data Indices:",valIndices)
     
@@ -114,29 +112,40 @@ def ex5testeATodoSistema():
     toString("CodeHamming: ", codeHamming)
     toString("CodeHammingSHAPE: ", codeHamming.shape)
 #    Modulaçao Digital
-    codePRZ=toPRZ(codeHamming,2,1)
+    codePRZ=toPRZ(codeHamming,8,1)
     toString("CodePRZ: ", codePRZ)
     
 #    adiciona ruido
-    noise=0.1
-    afterPassChannelAWGN=channelAWGN(codePRZ,noise)
-    toString("Ruido: ", noise)
-    toString("CANALRUIDO: ", afterPassChannelAWGN)
-    toString("DIFERENCAS: ", np.sum(afterPassChannelAWGN!=codePRZ))
-    
-#    passa de modulacao sinal para binario
-    decodeprz=decodePRZ(afterPassChannelAWGN,2,0)
-    toString("DecodePRZ: ",decodeprz)
-    toString("DIFERENCAS: ", np.sum(decodeprz!=codeHamming))
-    
-#    descodificacao Hamming
-    decodeHamming=tp04.descodificacao_hamming(decodeprz)
-    toString("decodeHamming: ", decodeHamming)
-    toString("DIFERENCAS: ", np.sum(decodeHamming!=codiVals))
-    
-#    descodificacao de binario
-    decodeBits=tp03.descodificacao(4,decodeHamming)
-    toString("decodeBits", decodeBits)
-    toString("DIFERENCAS: ", np.sum(decodeBits!=valIndices))
-    
-ex5testeATodoSistema()
+    noise = np.array([0.5, 1, 2, 4])
+    for n in noise:
+        afterPassChannelAWGN=channelAWGN(codePRZ, n)
+        toString("Ruido: ", n)
+        toString("CANALRUIDO: ", afterPassChannelAWGN)
+        toString("DIFERENCAS: ", np.sum(afterPassChannelAWGN!=codePRZ))
+        
+    #    passa de modulacao sinal para binario
+        decodeprz=decodePRZ(afterPassChannelAWGN,2,0)
+        toString("DecodePRZ: ",decodeprz)
+        toString("DIFERENCAS: ", np.sum(decodeprz!=codeHamming))
+        
+    #    descodificacao Hamming
+        decodeHamming=tp04.descodificacao_hamming(decodeprz)
+        toString("decodeHamming: ", decodeHamming)
+        toString("DIFERENCAS: ", np.sum(decodeHamming!=codiVals))
+        
+    #    descodificacao de binario
+        decodeBits=tp03.descodificacao(4,decodeHamming)
+        toString("decodeBits", decodeBits)
+        toString("DIFERENCAS: ", np.sum(decodeBits!=valIndices))
+        
+        p = sum(data * data) / len(data)
+        eq = data - valQuanti
+        peq =  sum(eq * eq) / len(eq)
+        SNRP = 10. * np.log10(p/peq)
+        
+        BERP = data / np.sum(decodeBits!=valIndices)
+        BERT = 0.5 * math.erfc(math.sqrt((3*3/n)))
+        
+        toString("BERT", BERT)
+        toString("BERP", BERP)
+        toString("SNRP", SNRP)

@@ -8,14 +8,56 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.io.wavfile as wav
 
+def tabelas_mid_rise(nBits, vMax):
+    """Cria as tabelas de valores de quantificacao e decisao utilizadas para a 
+    codificacao
 
-def TabelasMidRise(nBits, vMax):
-    delta = 2.*vMax / 2.**nBits
-    vQ = np.arange(-vMax+delta/2., vMax, delta)
-    vD = np.arange(-vMax + delta, vMax - delta/2, delta)
+    Parameters
+    ----------
+    nBits : Integer define o numero de bits que serao usados para quantificacao
+    vMax : Integer define a amplitude maxima que o sinal a codificar tem
+    
+    Returns
+    -------
+    out : tuplo com um ndarray 1D com os valores de quantificacao e um  ndarray
+    1D com os valores de decisao
+ 
+    Examples
+    --------
+    >>> tabelas_mid_rise(4, 5)
+    (array([-4.6875, -4.0625, -3.4375, ...,  3.4375,  4.0625,  4.6875]),
+    array([-4.375, -3.75 , -3.125, ...,  3.125,  3.75 ,  4.375]))
+    """
+    delta = 2.0 * vMax / 2.0**nBits
+    vQ = np.arange(-vMax + delta / 2.0, vMax, delta)
+    vD = np.arange(-vMax + delta, vMax - delta / 2.0, delta)
     return vQ, vD
 
-def Quantificador(vQ, vD, fx):
+def quantificador(vQ, vD, fx):
+    """Quantifica um sinal usando as tabelas de quantificacao e decisao 
+    introduzidas
+
+    Parameters
+    ----------
+    vQ : ndarray 1D com os valores de quantificacao
+    vD : ndarray 1D com os valores de decisao
+    fx : ndarray 1D com o sinal a quantificar
+    
+    Returns
+    -------
+    out : tuplo com um ndarray 1D com o sinal quantificado e um ndarrau 1D com 
+    os indices referentes aos valores quantificados da tabela de quantificacao
+ 
+    Notes
+    -------
+    Se forem introduzidas tabelas com valores de quantificados que nao sejam 
+    adequados a funcao gera novas tabelas de quantificacao e decisao
+    
+    Examples
+    --------
+    >>> vQ, vD = tabelas_mid_rise(4, 5)
+    >>> quantificador(vQ, vD, np.arange(-5, 6))
+    """
     vMaxp = np.max(fx) # Amplitude maxima do sinal fx
     vMaxn = np.min(fx) # Amplitude minima do sinal fx
     meioDelta = np.abs(vQ[0] - vQ[1]) / 2
@@ -23,9 +65,9 @@ def Quantificador(vQ, vD, fx):
     # Condição que veririfica se ambas as aplitudes estão contidas no vQ
     if(vMaxp > vQ[-1] + meioDelta or vMaxn < vQ[0] - meioDelta):
         if(vMaxp > np.abs(vMaxn)):
-            vQ, vD = TabelasMidRise(np.log2(len(vQ)), vMaxp)
+            vQ, vD = tabelas_mid_rise(np.log2(len(vQ)), vMaxp)
         else:
-            vQ, vD = TabelasMidRise(np.log2(len(vQ)), np.abs(vMaxn))
+            vQ, vD = tabelas_mid_rise(np.log2(len(vQ)), np.abs(vMaxn))
 
     # Array de valores quantificados
     fq = np.ones(len(fx), dtype=float) * vQ[-1]
@@ -37,18 +79,18 @@ def Quantificador(vQ, vD, fx):
         if(len(arrTrue) > 0):
             fq[i] = vQ[arrTrue[0]]
             fi[i] = arrTrue[0]
-    return fq, fi  
+    return (fq, fi, vQ, vD)  
 
-def tabelasmidtread(nBits, vMax):
+def tabelas_mid_tread(nBits, vMax):
     delta = 2. * vMax / 2.**nBits
     quantificacionValues = np.arange(-vMax + (delta), vMax + delta, delta)
     decisionValues = np.arange(-vMax + (delta), vMax + (delta - (delta / 2)), delta)
     return quantificacionValues, decisionValues, delta
 
-def SNR(signalIn, R, vMax):
+def sne(signalIn, R, vMax):
     vMax = np.max(signalIn)
-    quanti, deci = TabelasMidRise(R, vMax)
-    signalOut, used = Quantificador(signalIn, quanti, deci)
+    quanti, deci = tabelas_mid_rise(R, vMax)
+    signalOut, used = quantificador(signalIn, quanti, deci)
     Px = np.sum([(signalIn**2) / 2])
     PRuido = vMax**2 / (3 * (2**(2 * R)))
     SNRT = 6. * R + 10. * np.log10((3. * Px) / (vMax**2))
@@ -61,11 +103,11 @@ def main():
     vMax = 20
     fx = np.arange(-vMax, vMax + .5, 0.5)
     nBits = 3
-    vQ, vD = TabelasMidRise(nBits, vMax)
+    vQ, vD = tabelas_mid_rise(nBits, vMax)
     print("fx", fx)
     print("Q", vQ)
     print("D", vD)
-    fq, fi = Quantificador(vQ, vD, fx)
+    fq, fi = quantificador(vQ, vD, fx)
     print("fq", fq)
     print("fi", fi)
     plt.plot(fq)
@@ -88,11 +130,11 @@ def main():
     SNRP = np.arange(len(R), dtype='float')
     
     for i in range(len(R)):
-        vQ, vD = TabelasMidRise(R[i], vMax)
+        vQ, vD = tabelas_mid_rise(R[i], vMax)
         print("fx", fx)
         print("Q", vQ)
         print("D", vD)
-        fq, fi = Quantificador(vQ, vD, fx)
+        fq, fi = quantificador(vQ, vD, fx)
         print("fq", fq)
         print("fi", fi)
         plt.figure()

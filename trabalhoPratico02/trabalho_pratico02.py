@@ -71,7 +71,8 @@ def quantificador(vQ, vD, fx):
 
     # Array de valores quantificados
     fq = np.ones(len(fx), dtype=float) * vQ[-1]
-    # Array dos idices da tabela de quantificação referentes aos valores quantificados
+    # Array dos idices da tabela de quantificação referentes aos valores
+    # quantificados
     fi = np.ones(len(fx), dtype=float) * len(vQ) - 1
     for i in range(len(fx)):
         arrayBin = fx[i] <= vD
@@ -84,7 +85,8 @@ def quantificador(vQ, vD, fx):
 def tabelas_mid_tread(nBits, vMax):
     delta = 2. * vMax / 2.**nBits
     quantificacionValues = np.arange(-vMax + (delta), vMax + delta, delta)
-    decisionValues = np.arange(-vMax + (delta), vMax + (delta - (delta / 2)), delta)
+    decisionValues = np.arange(-vMax + (delta), vMax + (delta - (delta / 2)),
+                               delta)
     return quantificacionValues, decisionValues, delta
 
 def sne(signalIn, R, vMax):
@@ -148,7 +150,4 @@ def main():
     plt.figure()
     plt.plot(R, SNRT)
     plt.plot(R, SNRP)
-    
-    # exercicio 4
-    # a)
-    #rate, data = wav.read("D:/LEIM/3_Semestre/CPS/pythonWorkspace_1617/wavFiles/guitarra.wav", "r")
+

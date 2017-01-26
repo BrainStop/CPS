@@ -3,14 +3,12 @@
 Created on Mon Oct 31 11:23:35 2016
 @author: David
 """
+import numpy as np
+import scipy.io.wavfile as wav
 import sys
 sys.path.append("../")
-import numpy as np
-import matplotlib.pyplot as plt
-import scipy.io.wavfile as wav
 import trabalhoPratico02.trabalho_pratico02 as tp02
 
-#oejfzieohfjzahglkjrhglkzjerglkjzehg
 
 #ex 1)
 #==============================================================================
@@ -26,9 +24,9 @@ def codificacao8bit(nbits, signalin):
     return arr_bin_spliced.flatten().astype(np.int64)
    
 def codificacao(nbits, signalin):
-    if(nbits <= 8):
+    if (nbits <= 8):
         return codificacao8bit(nbits, signalin)
-#TODO Implementar codificaçcao com nBits superior a 8
+# TODO Implementar codificaçcao com nBits superior a 8
 #    def codificacao(R,signalIn):
 #    arrBin=np.zeros(len(signalIn)*R*1,dtype=np.int64)
 #    for i in range(len(signalIn)):
@@ -36,7 +34,7 @@ def codificacao(nbits, signalin):
 #        arrBin[i]=val
 #    return arrBin
 ##output desejado!=[1,0,1,0,1,0,1,0,1,0,1,0,0,1,0,1,0,1,0,1,1,1,0,1,1,1]
-#    
+
 def descodificacao(nbits, signalin):
     """descodificacao passa de binario para um np.int64 base 10"""
     #converte o array 1D para XxR
@@ -52,7 +50,8 @@ def DPCM(nbits, signalin):
     sub_signal[0] = 0
     dif_signal = signalin - sub_signal
     val_mid_rise, int_mid_rise = tp02.TabelasMidRise(nbits, np.max(dif_signal))
-    y_quant, index_quant = tp02.Quantificador(dif_signal, val_mid_rise, int_mid_rise)
+    y_quant, index_quant = tp02.Quantificador(dif_signal, val_mid_rise,
+                                              int_mid_rise)
     print(index_quant)
     return codificacao(nbits, index_quant)
     
@@ -63,7 +62,8 @@ def _ex2PCM(ficheiro):
     for i in range(len(R)):
         val_mid_rise, int_mid_rise = tp02.TabelasMidRise(R[i], np.max(data))
         print(val_mid_rise, int_mid_rise)
-        y_quant, index_quant = tp02.Quantificador(val_mid_rise, int_mid_rise, data)
+        y_quant, index_quant = tp02.Quantificador(val_mid_rise, int_mid_rise,
+                                                  data)
         print("index_quant")
         print(index_quant)
         guitarraCodi = codificacao(R[i], index_quant).astype(int)
@@ -96,17 +96,20 @@ def main():
     R = 3
     nbits = R
     #
-    #ex a)
-    #usando o quantificador midrise codificaçao!
-    #..........................................................................
+    # ex a)
+    # usando o quantificador midrise codificaçao!
+    # .........................................................................
     a_val_mid_rise, a_int_mid_rise = tp02.TabelasMidRise(R, np.max(y))
-    a_y_quant, a_index_quant = tp02.Quantificador(a_val_mid_rise, a_int_mid_rise, y)
+    a_y_quant, a_index_quant = tp02.Quantificador(a_val_mid_rise,
+                                                  a_int_mid_rise, y)
     ay_coded = codificacao(nbits, a_index_quant)
     #ex b)
     #..........................................................................
     #usando quantificador Midtread com R=3
-    b_val_mid_tread, b_int_mid_tread, b_delta = tp02.tabelasmidtread(R, np.max(y))
-    byQuanti, b_index_quant = tp02.Quantificador(b_val_mid_tread, b_int_mid_tread, y)
+    b_val_mid_tread, b_int_mid_tread, b_delta = tp02.tabelasmidtread(R,
+                                                                     np.max(y))
+    byQuanti, b_index_quant = tp02.Quantificador(b_val_mid_tread,
+                                                 b_int_mid_tread, y)
     by_coded = codificacao(R, b_index_quant)
     #ex c)
     #..........................................................................

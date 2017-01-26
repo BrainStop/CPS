@@ -17,38 +17,41 @@ import trabalhoPratico03.trabalho_pratico03 as tp03
 import trabalhoPratico04.trabalho_pratico04 as tp04
 
 
-Stream= np.array([0,1,0,1,0,1,1,0])
-even=6
-Amp=5
-Eb=50
+Stream = np.array([0, 1, 0, 1, 0, 1, 1, 0])
+even = 6
+Amp = 5
+Eb = 50
 
-def toString(info,val):
+
+def toString(info, val):
     print(str(info)+str(val))
 
-#Modulacao digital
+
+# Modulacao digital
 def toPNRZ(stream, evenStream, amp):
     newStream = np.zeros((len(stream), evenStream))
-    indx_0 = np.where(stream[:,np.newaxis]==0)[0]
-    indx_1 = np.where(stream[:,np.newaxis]==1)[0]
-    newStream[indx_0,:evenStream*2] = amp
-    newStream[indx_1,:evenStream*2] = -amp
+    indx_0 = np.where(stream[:, np.newaxis] == 0)[0]
+    indx_1 = np.where(stream[:, np.newaxis] == 1)[0]
+    newStream[indx_0, :evenStream*2] = amp
+    newStream[indx_1, :evenStream*2] = -amp
     return newStream.flatten()
-    
-def  toQPSK(stream, evenStream,Eb):
-#    t do recetorNormado mesmo len que stream
-    t=np.arange(0,len(stream))
-    toString("t=",t)
+
+
+def toQPSK(stream, evenStream, Eb):
+    # todo recetorNormado mesmo len que stream
+    t = np.arange(0,len(stream))
+    toString("t=", t)
     #Tb tempo de bit logo:
     Tb=evenStream
     #como Eb=(Amp**2/2)*Tb
     Amp=np.sqrt(Eb/(Tb+(1/2)))*1.0
-    toString("Amp",Amp)
+    toString("Amp", Amp)
 
-    toString("Rb=",Rb)
-    Rs=Rb
-    fc=Rb/4.0
+    toString("Rb=", Rb)
+    Rs = Rb
+    fc = Rb / 4.0
     recetorNormado=np.sqrt(2*Rs)*np.cos(2*np.pi*fc*t)
-    toString("recetorNormado",recetorNormado)
+    toString("recetorNormado", recetorNormado)
     pnzr1=toPNRZ(stream,evenStream, Amp)
     pnzr2=toPNRZ(stream, evenStream, Amp)
     toString("pnzr1",pnzr1)

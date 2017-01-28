@@ -22,18 +22,23 @@ def codificacao8bit(nbits, signalin):
     arr_bin_spliced = arry_bin[:, np.arange(-nbits, 0)]#
     #Altera o forma do array para unidimensional e retorna-o a np.bool
     return arr_bin_spliced.flatten().astype(np.int64)
-   
+
+
 def codificacao(nbits, signalin):
     if (nbits <= 8):
+        print "8"
         return codificacao8bit(nbits, signalin)
-# TODO Implementar codificaçcao com nBits superior a 8
-#    def codificacao(R,signalIn):
-#    arrBin=np.zeros(len(signalIn)*R*1,dtype=np.int64)
-#    for i in range(len(signalIn)):
-#        val=np.binary_repr(signalIn[i])
-#        arrBin[i]=val
-#    return arrBin
-##output desejado!=[1,0,1,0,1,0,1,0,1,0,1,0,0,1,0,1,0,1,0,1,1,1,0,1,1,1]
+    else:
+        print "9"
+        return codificacaoNBits(nbits, signalin)
+
+
+def codificacaoNBits(nbits, signalin):
+    arrBin = np.zeros(len(signalin) * nbits, dtype=int)
+    for i in range(len(signalin)):
+        bits = map(int, list(np.binary_repr(signalin[i])))
+        arrBin[i*nbits + nbits - len(bits):(i+1)*nbits] = bits
+    return arrBin
 
 def descodificacao(nbits, signalin):
     """descodificacao passa de binario para um np.int64 base 10"""
